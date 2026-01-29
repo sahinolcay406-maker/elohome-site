@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ELO Home - Mumunu Seç</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f2ee;
+            padding: 40px 14px;
+        }
+
+        .box {
+            max-width: 460px;
+            margin: auto;
+            background: #fff;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+            border: 1px solid #e9e1db;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 0 0 10px;
+        }
+
+        .step {
+            font-size: 13px;
+            color: #6b6b6b;
+            margin-top: 12px;
+        }
+
+        select,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        button {
+            background: #c4a484;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 16px;
+            font-size: 15px;
+            text-align: center;
+            line-height: 1.45;
+        }
+
+        .shop {
+            margin-top: 12px;
+            display: none;
+            background: #2f2a25;
+            color: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6b6b6b;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+        <h2>🕯️ Mumunu Seç</h2>
+
+        <div class="step">1️⃣ Koku / Tema seç</div>
+        <select id="koku">
+            <option value="">Seçiniz</option>
+            <option value="latte">Latte / Kahve</option>
+            <option value="meyve">Meyve Bahçesi</option>
+            <option value="okyanus">Okyanus</option>
+            <option value="buz">Okyanus & Buz Dağı</option>
+            <option value="cilek">Çilek</option>
+            <option value="matcha">Matcha</option>
+            <option value="cicek">Çiçek</option>
+            <option value="lotus">Lotus</option>
+            <option value="kalp">Pembe Kalp</option>
+            <option value="sukulent">Sukulent</option>
+        </select>
+
+        <div class="step">2️⃣ Kap seç</div>
+        <select id="kap">
+            <option value="">Seçiniz</option>
+            <option value="cam">Cam / Bardak</option>
+            <option value="tas">Taş tozu</option>
+            <option value="set">Set</option>
+            <option value="farketmez">Farketmez</option>
+        </select>
+
+        <div class="step">3️⃣ Sana özel öneriyi bul</div>
+        <button onclick="sec()">Mumu Bul</button>
+
+        <div class="result" id="sonuc"></div>
+
+        <a id="shopBtn" class="shop" target="_blank">Shopier’de Gör</a>
+
+        <div class="note">Seçimlerine göre en uygun ürün otomatik belirlenir.</div>
+    </div>
+
+    <script>
+
+        const storeUrl = "https://www.shopier.com/elohome";
+
+        const PRODUCTS = [
+            { title: "Latte Karamel Bardak Mum", url: "https://www.shopier.com/elohome/43580390", kap: "cam", theme: ["latte", "kahve", "karamel"] },
+            { title: "Taş Tozu Obje & Latte Bardak Mum Seti", url: "https://www.shopier.com/elohome/43580323", kap: "set", theme: ["latte", "kahve", "set"] },
+            { title: "Meyve Bahçesi Bardak Mum", url: "https://www.shopier.com/elohome/43580058", kap: "cam", theme: ["meyve"] },
+            { title: "Okyanus Temalı Kuş Kafesi Taş Tozu Mum", url: "https://www.shopier.com/elohome/43579969", kap: "tas", theme: ["okyanus", "deniz"] },
+            { title: "Strawberry Dream Dekoratif Mum", url: "https://www.shopier.com/elohome/43579854", kap: "tas", theme: ["cilek"] },
+            { title: "Okyanus Esintisi Bardak Mum", url: "https://www.shopier.com/elohome/43579773", kap: "cam", theme: ["okyanus"] },
+            { title: "Okyanus & Buz Dağı Bardak Mum", url: "https://www.shopier.com/elohome/43579714", kap: "cam", theme: ["okyanus", "buz"] },
+            { title: "Pembe Kalpli Bardak Mum", url: "https://www.shopier.com/elohome/43579638", kap: "cam", theme: ["kalp"] },
+            { title: "Çiçek Tasarım Bardak Mum", url: "https://www.shopier.com/elohome/43579569", kap: "cam", theme: ["cicek"] },
+            { title: "Kuş Kafesi Serisi Çiçek Mum", url: "https://www.shopier.com/elohome/43579480", kap: "tas", theme: ["cicek"] },
+            { title: "Beyaz Çiçek Tasarım Mum", url: "https://www.shopier.com/elohome/43579383", kap: "cam", theme: ["cicek"] },
+            { title: "Pembe Lotus Tasarım Mum", url: "https://www.shopier.com/elohome/43579326", kap: "cam", theme: ["lotus"] },
+            { title: "Sukulent Bahçesi Mum", url: "https://www.shopier.com/elohome/43579056", kap: "tas", theme: ["sukulent"] },
+            { title: "Matcha Dream", url: "https://www.shopier.com/elohome/43578860", kap: "cam", theme: ["matcha"] },
+        ];
+
+        function sec() {
+            const koku = document.getElementById("koku").value;
+            const kap = document.getElementById("kap").value;
+            const sonuc = document.getElementById("sonuc");
+            const shopBtn = document.getElementById("shopBtn");
+
+            if (!koku || !kap) {
+                sonuc.innerHTML = "Lütfen koku/tema ve kap seçimini yap 😊";
+                shopBtn.style.display = "none";
+                return;
+            }
+
+            let best = null;
+            let bestScore = -99;
+
+            for (const p of PRODUCTS) {
+                let score = 0;
+
+                if (kap !== "farketmez") {
+                    if (p.kap === kap) score += 3;
+                    else score -= 1;
+                }
+
+                if (p.theme.includes(koku)) score += 4;
+
+                if (koku === "okyanus" && p.theme.includes("buz")) score += 1;
+                if (koku === "meyve" && p.theme.includes("cilek")) score += 1;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = p;
+                }
+            }
+
+            const target = (!best || bestScore < 2) ? storeUrl : best.url;
+            const title = (!best || bestScore < 2) ? "ELO Home ürünleri" : best.title;
+
+            sonuc.innerHTML = `
+    Senin için önerim:<br>
+    <b>${title}</b><br>
+    <span style="color:#6b6b6b;font-size:13px">
+      Premium dokunuşla hazırlanmış özel bir seçim.
+    </span>
+  `;
+
+            shopBtn.href = target;
+            shopBtn.textContent = (target === storeUrl) ? "Mağazaya Git" : "Shopier’de Ürünü Aç";
+            shopBtn.style.display = "block";
+        }
+
+    </script>
+
+</body>
+
+</html>
